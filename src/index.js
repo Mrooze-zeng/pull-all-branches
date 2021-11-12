@@ -1,7 +1,14 @@
-const { commands, window, workspace, StatusBarAlignment } = require("vscode");
+const {
+  commands,
+  window,
+  workspace,
+  StatusBarAlignment,
+  ProgressLocation,
+} = require("vscode");
 
 const Git = require("./git");
 const commadId = "pull-all.pull";
+const tooltip = "Pull all remote update!";
 
 function activate(context) {
   const currentFolder = workspace.workspaceFolders[0];
@@ -17,27 +24,48 @@ function activate(context) {
       const git = new Git({ cwd: projectRoot });
       initStatusBar(context);
       commad = function () {
-        git.logger(`============run on ${new Date().toString()}==============`);
-        const currentBranch = git.getCurrentBranch();
-        const updatedBranch = [];
-        git.fetch();
-        git.getBranches().forEach(async (branch) => {
-          const [local, remote] = branch;
-          if (remote && git.getRemoteCommitCount(...branch)) {
-            updatedBranch.push(local);
-            git.checkout(local);
-            git.pull();
-          }
-        });
-        git.checkout(currentBranch);
-        message = `There is no branch updated!`;
-        if (updatedBranch.length) {
-          message = `${
-            updatedBranch.length
-          } branch(es) updated:\n${updatedBranch.join("\n")}`;
-        }
+        window.withProgress(
+          {
+            location: ProgressLocation.Notification,
+            title: tooltip,
+            cancellable: false,
+          },
+          async function (progress) {
+            progress.report({ increment: 5 });
+            git.logger(
+              `============run on ${new Date().toString()}==============`,
+            );
+            const currentBranch = git.getCurrentBranch();
+            const updatedBranch = [];
+            git.fetch();
+            progress.report({ increment: 10, message: "Start pulling..." });
+            const branches = git.getBranches();
+            let step = Math.floor(80 / branches.length);
+            branches.forEach((branch) => {
+              const [local, remote] = branch;
+              if (remote && git.getRemoteCommitCount(...branch)) {
+                updatedBranch.push(local);
+                git.checkout(local);
+                git.pull();
+              }
+              progress.report({ increment: step, message: `Pulling ${local}` });
+            });
+            git.checkout(currentBranch);
+            message = `There is no branch updated!`;
+            if (updatedBranch.length) {
+              message = `${
+                updatedBranch.length
+              } branch(es) updated:\n${updatedBranch.join("\n")}`;
+            }
 
-        window.showInformationMessage(message);
+            progress.report({
+              increment: branches.length ? 10 : 90,
+              message: message,
+            });
+            window.showInformationMessage(message);
+            return;
+          },
+        );
       };
     } catch (error) {
       console.log(error);
@@ -53,7 +81,7 @@ function initStatusBar(context) {
   statusBar.command = commadId;
   context.subscriptions.push(statusBar);
   statusBar.text = `$(arrow-down) PULL ALL`;
-  statusBar.tooltip = "Pull all remote update!";
+  statusBar.tooltip = tooltip;
   statusBar.show();
 }
 
