@@ -95,8 +95,8 @@ module.exports = class Git {
     return this.gitSpawnSync("checkout", branch);
   }
   pull() {
-    const { stdout } = this.gitSpawnSync("pull");
-    this.logger(`Pull: ${stdout.toString()}`);
+    let { output } = this.gitSpawnSync("pull");
+    this.logger(`Pull: ${output.map((o) => o.toString()).join("\n")}`);
   }
   fetch() {
     return this.gitSpawnSync("fetch", "--prune");

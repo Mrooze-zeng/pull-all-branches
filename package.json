@@ -4,7 +4,7 @@
   "description": "pull all branches",
   "repository": "git@github.com:Mrooze-zeng/pull-all-branches.git",
   "publisher": "mrooze",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.62.0"
   },
