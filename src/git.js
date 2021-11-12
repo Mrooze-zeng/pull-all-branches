@@ -1,11 +1,19 @@
 const { spawnSync } = require("child_process");
+const { window } = require("vscode");
+
+const extensionOutputChannelName = "pull-all";
 
 module.exports = class Git {
   constructor({ cwd = "" } = {}) {
     this.cwd = cwd;
-    // console.log(this.getStatus());
+    this.log = window.createOutputChannel(extensionOutputChannelName);
+  }
+  logger(message = "") {
+    console.log(message);
+    this.log.appendLine(message);
   }
   gitSpawnSync(...args) {
+    this.logger(`Run: git ${args.join(" ")}`);
     return spawnSync("git", args, {
       cwd: this.cwd,
     });
@@ -49,7 +57,9 @@ module.exports = class Git {
     if (stderr.length) {
       throw new Error(stderr.toString());
     }
-    return stdout.toString().trim();
+    const res = stdout.toString().trim();
+    this.logger(`Current branch: ${res}`);
+    return res;
   }
   getBranches() {
     const { stdout, stderr } = this.gitSpawnSync(
@@ -77,13 +87,16 @@ module.exports = class Git {
     if (stderr.length) {
       return 0;
     }
-    return (stdout.toString().trim().match(/>/g) || []).length;
+    const count = (stdout.toString().trim().match(/>/g) || []).length;
+    this.logger(`\t${local}: ${count}`);
+    return count;
   }
   checkout(branch = "") {
     return this.gitSpawnSync("checkout", branch);
   }
   pull() {
-    return this.gitSpawnSync("pull");
+    const { stdout } = this.gitSpawnSync("pull");
+    this.logger(`Pull: ${stdout.toString()}`);
   }
   fetch() {
     return this.gitSpawnSync("fetch", "--prune");

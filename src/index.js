@@ -17,10 +17,11 @@ function activate(context) {
       const git = new Git({ cwd: projectRoot });
       initStatusBar(context);
       commad = function () {
+        git.logger(`============run on ${new Date().toString()}==============`);
         const currentBranch = git.getCurrentBranch();
         const updatedBranch = [];
         git.fetch();
-        git.getBranches().forEach((branch) => {
+        git.getBranches().forEach(async (branch) => {
           const [local, remote] = branch;
           if (remote && git.getRemoteCommitCount(...branch)) {
             updatedBranch.push(local);
@@ -38,7 +39,9 @@ function activate(context) {
 
         window.showInformationMessage(message);
       };
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
   let disposable = commands.registerCommand(commadId, commad);
 

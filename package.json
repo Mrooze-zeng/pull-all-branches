@@ -4,7 +4,7 @@
   "description": "pull all branches",
   "repository": "git@github.com:Mrooze-zeng/pull-all-branches.git",
   "publisher": "mrooze",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -20,14 +20,21 @@
     "commands": [
       {
         "command": "pull-all.pull",
-        "title": "Pull all branches"
+        "icon": "$(arrow-down)",
+        "title": "Pull all remote update!"
       }
     ],
     "menus": {
       "scm/title": [
         {
           "command": "pull-all.pull",
-          "group": "inline"
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "pull-all.pull",
+          "group": "navigation"
         }
       ]
     }
