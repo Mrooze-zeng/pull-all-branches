@@ -2,7 +2,9 @@
   "name": "pull-all",
   "displayName": "pull all",
   "description": "pull all branches",
-  "version": "0.0.1",
+  "repository": "git@github.com:Mrooze-zeng/pull-all-branches.git",
+  "publisher": "mrooze",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -10,6 +12,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onCommand:pull-all.pull"
   ],
   "main": "./src/index.js",
