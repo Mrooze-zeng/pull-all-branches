@@ -96,7 +96,11 @@ module.exports = class Git {
   }
   pull() {
     let { output } = this.gitSpawnSync("pull");
-    this.logger(`Pull: ${output.map((o) => o.toString()).join("\n")}`);
+    try {
+      this.logger(`Pull: ${output.map((o) => o.toString()).join("\n")}`);
+    } catch (error) {
+      this.logger(`Error: ${error}`);
+    }
   }
   fetch() {
     return this.gitSpawnSync("fetch", "--prune");
