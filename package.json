@@ -4,7 +4,7 @@
   "description": "pull all branches",
   "repository": "git@github.com:Mrooze-zeng/pull-all-branches.git",
   "publisher": "mrooze",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -40,7 +40,8 @@
     }
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "vsce:publish": "vsce publish"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",
