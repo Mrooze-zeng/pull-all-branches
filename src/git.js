@@ -29,7 +29,7 @@ module.exports = class Git {
         cwd: cwd,
       },
     );
-    if (stderr.length) {
+    if (stderr && stderr.length) {
       throw new Error(stderr.toString());
     }
     return stdout.toString().trim();
@@ -54,7 +54,7 @@ module.exports = class Git {
       "--abbrev-ref",
       "HEAD",
     );
-    if (stderr.length) {
+    if (stderr && stderr.length) {
       throw new Error(stderr.toString());
     }
     const res = stdout.toString().trim();
@@ -67,7 +67,7 @@ module.exports = class Git {
       "--format=%(refname:short) %(upstream:short)",
       "refs/heads",
     );
-    if (stderr.length) {
+    if (stderr && stderr.length) {
       return [];
     }
     return stdout
@@ -84,7 +84,7 @@ module.exports = class Git {
       "--left-right",
       `${local}...${remote}`,
     );
-    if (stderr.length) {
+    if (stderr && stderr.length) {
       return 0;
     }
     const count = (stdout.toString().trim().match(/>/g) || []).length;
@@ -95,11 +95,11 @@ module.exports = class Git {
     return this.gitSpawnSync("checkout", branch);
   }
   pull() {
-    let { output } = this.gitSpawnSync("pull");
-    try {
-      this.logger(`Pull: ${output.map((o) => o && o.toString()).join("\n")}`);
-    } catch (error) {
-      this.logger(`Error: ${error}`);
+    let { output, stderr } = this.gitSpawnSync("pull");
+    this.logger(`Pull: ${output.map((o) => o && o.toString()).join("\n")}`);
+    if (stderr && stderr.length) {
+      window.showErrorMessage(stderr.toString());
+      throw new Error(stderr.toString());
     }
   }
   fetch() {

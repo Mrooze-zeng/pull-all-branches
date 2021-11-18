@@ -47,7 +47,12 @@ function activate(context) {
                 if (remote && git.getRemoteCommitCount(...branch)) {
                   updatedBranch.push(local);
                   git.checkout(local);
-                  git.pull();
+                  try {
+                    git.pull();
+                  } catch (err) {
+                    git.checkout(currentBranch);
+                    throw err;
+                  }
                 }
                 progress.report({
                   increment: step,
