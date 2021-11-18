@@ -35,9 +35,8 @@ module.exports = class Git {
     return stdout.toString().trim();
   }
   static checkGit() {
-    const { status, stderr, stdout } = spawnSync("git", ["version"]);
-    console.log(stderr, stdout, "===");
-    return !(status === null);
+    const { stdout } = spawnSync("git", ["version"]);
+    return stdout && /(git|version)/gi.test(stdout.toString());
   }
   checkRemoteBranchExist(branch = "") {
     branch = branch || this.getCurrentBranch();
